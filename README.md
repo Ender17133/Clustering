@@ -1,7 +1,30 @@
+---
+jupyter:
+  colab:
+  kernelspec:
+    display_name: Python 3 (ipykernel)
+    language: python
+    name: python3
+  language_info:
+    codemirror_mode:
+      name: ipython
+      version: 3
+    file_extension: .py
+    mimetype: text/x-python
+    name: python
+    nbconvert_exporter: python
+    pygments_lexer: ipython3
+    version: 3.9.13
+  nbformat: 4
+  nbformat_minor: 1
+---
+
+::: {.cell .markdown id="GtYqxlPx4ISt"}
 # Libraries
+:::
 
-
-```python
+::: {.cell .code execution_count="1" id="e1hv9xIh3ILy"}
+``` python
 # Libraries
 ## sklearn
 from sklearn.decomposition import PCA
@@ -14,430 +37,68 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import random
-
 ```
+:::
 
+::: {.cell .markdown id="v2E_QNXN6b6g"}
 # Fundamentals
+:::
 
+::: {.cell .markdown id="AbBO6TIa4uBI"}
 ## Import Data
-I am interested in learning patterns of stocks by analyzing and clustering fundamental indicators of stocks data in December 2016. According to dataset source in Kaggle:
 
-`fundamentals.csv`: metrics extracted from annual SEC 10K fillings (2012-2016), should be enough to derive most of popular fundamental indicators.
+I am interested in learning patterns of stocks by analyzing and
+clustering fundamental indicators of stocks data in December 2016.
+According to dataset source in Kaggle:
 
-You can access all data from this [link](https://www.kaggle.com/code/uknowabhishek/nyse-fundamentals-analysis-and-k-means-clustering/notebook).
+`fundamentals.csv`: metrics extracted from annual SEC 10K fillings
+(2012-2016), should be enough to derive most of popular fundamental
+indicators.
 
+You can access all data from this
+[link](https://www.kaggle.com/code/uknowabhishek/nyse-fundamentals-analysis-and-k-means-clustering/notebook).
+:::
 
-```python
+::: {.cell .code execution_count="2" id="wafyYtii4fNB"}
+``` python
 # read the data
 df_fundamentals = pd.read_csv('fundamentals.csv')
 ```
+:::
 
-
-```python
+::: {.cell .code execution_count="3" colab="{\"base_uri\":\"https://localhost:8080/\",\"height\":357}" id="1NTHcyUy6fwp" outputId="9caff554-6c5e-4e9e-d93b-fcd2ae6b98ff"}
+``` python
 # first few rows of the data
 df_fundamentals.head()
 ```
 
+::: {.output .execute_result execution_count="3"}
+``` json
+{"type":"dataframe","variable_name":"df_fundamentals"}
+```
+:::
+:::
 
-
-
-
-  <div id="df-0ec65789-2b95-4532-9ac7-d254b3c72995" class="colab-df-container">
-    <div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>Unnamed: 0</th>
-      <th>Ticker Symbol</th>
-      <th>Period Ending</th>
-      <th>Accounts Payable</th>
-      <th>Accounts Receivable</th>
-      <th>Add'l income/expense items</th>
-      <th>After Tax ROE</th>
-      <th>Capital Expenditures</th>
-      <th>Capital Surplus</th>
-      <th>Cash Ratio</th>
-      <th>...</th>
-      <th>Total Current Assets</th>
-      <th>Total Current Liabilities</th>
-      <th>Total Equity</th>
-      <th>Total Liabilities</th>
-      <th>Total Liabilities &amp; Equity</th>
-      <th>Total Revenue</th>
-      <th>Treasury Stock</th>
-      <th>For Year</th>
-      <th>Earnings Per Share</th>
-      <th>Estimated Shares Outstanding</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>0</td>
-      <td>AAL</td>
-      <td>2012-12-31</td>
-      <td>3.068000e+09</td>
-      <td>-222000000.0</td>
-      <td>-1.961000e+09</td>
-      <td>23.0</td>
-      <td>-1.888000e+09</td>
-      <td>4.695000e+09</td>
-      <td>53.0</td>
-      <td>...</td>
-      <td>7.072000e+09</td>
-      <td>9.011000e+09</td>
-      <td>-7.987000e+09</td>
-      <td>2.489100e+10</td>
-      <td>1.690400e+10</td>
-      <td>2.485500e+10</td>
-      <td>-367000000.0</td>
-      <td>2012.0</td>
-      <td>-5.60</td>
-      <td>3.350000e+08</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>1</td>
-      <td>AAL</td>
-      <td>2013-12-31</td>
-      <td>4.975000e+09</td>
-      <td>-93000000.0</td>
-      <td>-2.723000e+09</td>
-      <td>67.0</td>
-      <td>-3.114000e+09</td>
-      <td>1.059200e+10</td>
-      <td>75.0</td>
-      <td>...</td>
-      <td>1.432300e+10</td>
-      <td>1.380600e+10</td>
-      <td>-2.731000e+09</td>
-      <td>4.500900e+10</td>
-      <td>4.227800e+10</td>
-      <td>2.674300e+10</td>
-      <td>0.0</td>
-      <td>2013.0</td>
-      <td>-11.25</td>
-      <td>1.630222e+08</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>2</td>
-      <td>AAL</td>
-      <td>2014-12-31</td>
-      <td>4.668000e+09</td>
-      <td>-160000000.0</td>
-      <td>-1.500000e+08</td>
-      <td>143.0</td>
-      <td>-5.311000e+09</td>
-      <td>1.513500e+10</td>
-      <td>60.0</td>
-      <td>...</td>
-      <td>1.175000e+10</td>
-      <td>1.340400e+10</td>
-      <td>2.021000e+09</td>
-      <td>4.120400e+10</td>
-      <td>4.322500e+10</td>
-      <td>4.265000e+10</td>
-      <td>0.0</td>
-      <td>2014.0</td>
-      <td>4.02</td>
-      <td>7.169154e+08</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>3</td>
-      <td>AAL</td>
-      <td>2015-12-31</td>
-      <td>5.102000e+09</td>
-      <td>352000000.0</td>
-      <td>-7.080000e+08</td>
-      <td>135.0</td>
-      <td>-6.151000e+09</td>
-      <td>1.159100e+10</td>
-      <td>51.0</td>
-      <td>...</td>
-      <td>9.985000e+09</td>
-      <td>1.360500e+10</td>
-      <td>5.635000e+09</td>
-      <td>4.278000e+10</td>
-      <td>4.841500e+10</td>
-      <td>4.099000e+10</td>
-      <td>0.0</td>
-      <td>2015.0</td>
-      <td>11.39</td>
-      <td>6.681299e+08</td>
-    </tr>
-    <tr>
-      <th>4</th>
-      <td>4</td>
-      <td>AAP</td>
-      <td>2012-12-29</td>
-      <td>2.409453e+09</td>
-      <td>-89482000.0</td>
-      <td>6.000000e+05</td>
-      <td>32.0</td>
-      <td>-2.711820e+08</td>
-      <td>5.202150e+08</td>
-      <td>23.0</td>
-      <td>...</td>
-      <td>3.184200e+09</td>
-      <td>2.559638e+09</td>
-      <td>1.210694e+09</td>
-      <td>3.403120e+09</td>
-      <td>4.613814e+09</td>
-      <td>6.205003e+09</td>
-      <td>-27095000.0</td>
-      <td>2012.0</td>
-      <td>5.29</td>
-      <td>7.328355e+07</td>
-    </tr>
-  </tbody>
-</table>
-<p>5 rows × 79 columns</p>
-</div>
-    <div class="colab-df-buttons">
-
-  <div class="colab-df-container">
-    <button class="colab-df-convert" onclick="convertToInteractive('df-0ec65789-2b95-4532-9ac7-d254b3c72995')"
-            title="Convert this dataframe to an interactive table."
-            style="display:none;">
-
-  <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960">
-    <path d="M120-120v-720h720v720H120Zm60-500h600v-160H180v160Zm220 220h160v-160H400v160Zm0 220h160v-160H400v160ZM180-400h160v-160H180v160Zm440 0h160v-160H620v160ZM180-180h160v-160H180v160Zm440 0h160v-160H620v160Z"/>
-  </svg>
-    </button>
-
-  <style>
-    .colab-df-container {
-      display:flex;
-      gap: 12px;
-    }
-
-    .colab-df-convert {
-      background-color: #E8F0FE;
-      border: none;
-      border-radius: 50%;
-      cursor: pointer;
-      display: none;
-      fill: #1967D2;
-      height: 32px;
-      padding: 0 0 0 0;
-      width: 32px;
-    }
-
-    .colab-df-convert:hover {
-      background-color: #E2EBFA;
-      box-shadow: 0px 1px 2px rgba(60, 64, 67, 0.3), 0px 1px 3px 1px rgba(60, 64, 67, 0.15);
-      fill: #174EA6;
-    }
-
-    .colab-df-buttons div {
-      margin-bottom: 4px;
-    }
-
-    [theme=dark] .colab-df-convert {
-      background-color: #3B4455;
-      fill: #D2E3FC;
-    }
-
-    [theme=dark] .colab-df-convert:hover {
-      background-color: #434B5C;
-      box-shadow: 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
-      filter: drop-shadow(0px 1px 2px rgba(0, 0, 0, 0.3));
-      fill: #FFFFFF;
-    }
-  </style>
-
-    <script>
-      const buttonEl =
-        document.querySelector('#df-0ec65789-2b95-4532-9ac7-d254b3c72995 button.colab-df-convert');
-      buttonEl.style.display =
-        google.colab.kernel.accessAllowed ? 'block' : 'none';
-
-      async function convertToInteractive(key) {
-        const element = document.querySelector('#df-0ec65789-2b95-4532-9ac7-d254b3c72995');
-        const dataTable =
-          await google.colab.kernel.invokeFunction('convertToInteractive',
-                                                    [key], {});
-        if (!dataTable) return;
-
-        const docLinkHtml = 'Like what you see? Visit the ' +
-          '<a target="_blank" href=https://colab.research.google.com/notebooks/data_table.ipynb>data table notebook</a>'
-          + ' to learn more about interactive tables.';
-        element.innerHTML = '';
-        dataTable['output_type'] = 'display_data';
-        await google.colab.output.renderOutput(dataTable, element);
-        const docLink = document.createElement('div');
-        docLink.innerHTML = docLinkHtml;
-        element.appendChild(docLink);
-      }
-    </script>
-  </div>
-
-
-<div id="df-1921b9c5-e542-4e5e-9b04-36d4eea1cb9d">
-  <button class="colab-df-quickchart" onclick="quickchart('df-1921b9c5-e542-4e5e-9b04-36d4eea1cb9d')"
-            title="Suggest charts"
-            style="display:none;">
-
-<svg xmlns="http://www.w3.org/2000/svg" height="24px"viewBox="0 0 24 24"
-     width="24px">
-    <g>
-        <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/>
-    </g>
-</svg>
-  </button>
-
-<style>
-  .colab-df-quickchart {
-      --bg-color: #E8F0FE;
-      --fill-color: #1967D2;
-      --hover-bg-color: #E2EBFA;
-      --hover-fill-color: #174EA6;
-      --disabled-fill-color: #AAA;
-      --disabled-bg-color: #DDD;
-  }
-
-  [theme=dark] .colab-df-quickchart {
-      --bg-color: #3B4455;
-      --fill-color: #D2E3FC;
-      --hover-bg-color: #434B5C;
-      --hover-fill-color: #FFFFFF;
-      --disabled-bg-color: #3B4455;
-      --disabled-fill-color: #666;
-  }
-
-  .colab-df-quickchart {
-    background-color: var(--bg-color);
-    border: none;
-    border-radius: 50%;
-    cursor: pointer;
-    display: none;
-    fill: var(--fill-color);
-    height: 32px;
-    padding: 0;
-    width: 32px;
-  }
-
-  .colab-df-quickchart:hover {
-    background-color: var(--hover-bg-color);
-    box-shadow: 0 1px 2px rgba(60, 64, 67, 0.3), 0 1px 3px 1px rgba(60, 64, 67, 0.15);
-    fill: var(--button-hover-fill-color);
-  }
-
-  .colab-df-quickchart-complete:disabled,
-  .colab-df-quickchart-complete:disabled:hover {
-    background-color: var(--disabled-bg-color);
-    fill: var(--disabled-fill-color);
-    box-shadow: none;
-  }
-
-  .colab-df-spinner {
-    border: 2px solid var(--fill-color);
-    border-color: transparent;
-    border-bottom-color: var(--fill-color);
-    animation:
-      spin 1s steps(1) infinite;
-  }
-
-  @keyframes spin {
-    0% {
-      border-color: transparent;
-      border-bottom-color: var(--fill-color);
-      border-left-color: var(--fill-color);
-    }
-    20% {
-      border-color: transparent;
-      border-left-color: var(--fill-color);
-      border-top-color: var(--fill-color);
-    }
-    30% {
-      border-color: transparent;
-      border-left-color: var(--fill-color);
-      border-top-color: var(--fill-color);
-      border-right-color: var(--fill-color);
-    }
-    40% {
-      border-color: transparent;
-      border-right-color: var(--fill-color);
-      border-top-color: var(--fill-color);
-    }
-    60% {
-      border-color: transparent;
-      border-right-color: var(--fill-color);
-    }
-    80% {
-      border-color: transparent;
-      border-right-color: var(--fill-color);
-      border-bottom-color: var(--fill-color);
-    }
-    90% {
-      border-color: transparent;
-      border-bottom-color: var(--fill-color);
-    }
-  }
-</style>
-
-  <script>
-    async function quickchart(key) {
-      const quickchartButtonEl =
-        document.querySelector('#' + key + ' button');
-      quickchartButtonEl.disabled = true;  // To prevent multiple clicks.
-      quickchartButtonEl.classList.add('colab-df-spinner');
-      try {
-        const charts = await google.colab.kernel.invokeFunction(
-            'suggestCharts', [key], {});
-      } catch (error) {
-        console.error('Error during call to suggestCharts:', error);
-      }
-      quickchartButtonEl.classList.remove('colab-df-spinner');
-      quickchartButtonEl.classList.add('colab-df-quickchart-complete');
-    }
-    (() => {
-      let quickchartButtonEl =
-        document.querySelector('#df-1921b9c5-e542-4e5e-9b04-36d4eea1cb9d button');
-      quickchartButtonEl.style.display =
-        google.colab.kernel.accessAllowed ? 'block' : 'none';
-    })();
-  </script>
-</div>
-    </div>
-  </div>
-
-
-
-
-
-```python
+::: {.cell .code execution_count="4" colab="{\"base_uri\":\"https://localhost:8080/\"}" id="QcnPSx6W7J47" outputId="9814be3c-6812-43bc-f91d-08bb9d50624f"}
+``` python
 # number of columns and rows in the fundamentals data
 length = df_fundamentals.shape
 
 print(f"There are {length[0]} rows and {length[1]} columns in the fundamental indicators dataset")
 ```
 
+::: {.output .stream .stdout}
     There are 1781 rows and 79 columns in the fundamental indicators dataset
-    
+:::
+:::
 
-
-```python
+::: {.cell .code execution_count="5" colab="{\"base_uri\":\"https://localhost:8080/\"}" id="ifjy2onE7ufS" outputId="b4b8af25-c104-4972-f3de-4e698198dd95"}
+``` python
 # information about data and its datatypes
 df_fundamentals.info()
 ```
 
+::: {.output .stream .stdout}
     <class 'pandas.core.frame.DataFrame'>
     RangeIndex: 1781 entries, 0 to 1780
     Data columns (total 79 columns):
@@ -524,432 +185,66 @@ df_fundamentals.info()
      78  Estimated Shares Outstanding                         1562 non-null   float64
     dtypes: float64(76), int64(1), object(2)
     memory usage: 1.1+ MB
-    
+:::
+:::
 
-There are 1781 rows and 79 columns in the dataset. I need to apply `Principal Component Analysis` (PCA) to reduce dimensionality of the data. Furthermore, there are `Uknown` and `Period Ending` columns which are going to be irrelevant for clustering, so I have to drop them. But before I drop `Period Ending` column, I need to use this column to filter data for only December 2016 fundamental metrics.
+::: {.cell .markdown id="wu5GNVoe736D"}
+There are 1781 rows and 79 columns in the dataset. I need to apply
+`Principal Component Analysis` (PCA) to reduce dimensionality of the
+data. Furthermore, there are `Uknown` and `Period Ending` columns which
+are going to be irrelevant for clustering, so I have to drop them. But
+before I drop `Period Ending` column, I need to use this column to
+filter data for only December 2016 fundamental metrics.
+:::
 
+::: {.cell .markdown id="CN7Xswzz8VPN"}
 ## Data Cleaning
+:::
 
-
-```python
+::: {.cell .code execution_count="7" id="QnMKQnmnhw9o"}
+``` python
 # convert `Period Ending` column to datetime
 df_fundamentals['Period Ending'] = pd.to_datetime(df_fundamentals['Period Ending'])
 
 # filter fundamental metrics data to include stock indicators of December 2016
 filtered_fundamentals = df_fundamentals[(df_fundamentals['Period Ending'].dt.year == 2016) & (df_fundamentals['Period Ending'].dt.month == 12)]
 ```
+:::
 
-
-```python
+::: {.cell .code execution_count="8" colab="{\"base_uri\":\"https://localhost:8080/\",\"height\":357}" id="CcTg7IKhjVrB" outputId="993dde7b-6f53-4756-b842-61d109a6da18"}
+``` python
 # check
 filtered_fundamentals.head()
 ```
 
+::: {.output .execute_result execution_count="8"}
+``` json
+{"type":"dataframe","variable_name":"filtered_fundamentals"}
+```
+:::
+:::
 
-
-
-
-  <div id="df-18e41ff1-91b5-4428-ae1b-6669b26f9f63" class="colab-df-container">
-    <div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>Unnamed: 0</th>
-      <th>Ticker Symbol</th>
-      <th>Period Ending</th>
-      <th>Accounts Payable</th>
-      <th>Accounts Receivable</th>
-      <th>Add'l income/expense items</th>
-      <th>After Tax ROE</th>
-      <th>Capital Expenditures</th>
-      <th>Capital Surplus</th>
-      <th>Cash Ratio</th>
-      <th>...</th>
-      <th>Total Current Assets</th>
-      <th>Total Current Liabilities</th>
-      <th>Total Equity</th>
-      <th>Total Liabilities</th>
-      <th>Total Liabilities &amp; Equity</th>
-      <th>Total Revenue</th>
-      <th>Treasury Stock</th>
-      <th>For Year</th>
-      <th>Earnings Per Share</th>
-      <th>Estimated Shares Outstanding</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>27</th>
-      <td>27</td>
-      <td>ADBE</td>
-      <td>2016-12-02</td>
-      <td>8.660160e+08</td>
-      <td>-160416000.0</td>
-      <td>11978000.0</td>
-      <td>16.0</td>
-      <td>-203805000.0</td>
-      <td>4.616331e+09</td>
-      <td>169.0</td>
-      <td>...</td>
-      <td>5.839774e+09</td>
-      <td>2.811635e+09</td>
-      <td>7.424835e+09</td>
-      <td>5.282279e+09</td>
-      <td>1.270711e+10</td>
-      <td>5.854430e+09</td>
-      <td>-5.132472e+09</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-    </tr>
-    <tr>
-      <th>67</th>
-      <td>67</td>
-      <td>AIZ</td>
-      <td>2016-12-31</td>
-      <td>2.080962e+09</td>
-      <td>9275000.0</td>
-      <td>-23031000.0</td>
-      <td>14.0</td>
-      <td>-85233000.0</td>
-      <td>3.175867e+09</td>
-      <td>NaN</td>
-      <td>...</td>
-      <td>0.000000e+00</td>
-      <td>0.000000e+00</td>
-      <td>4.098100e+09</td>
-      <td>2.561103e+10</td>
-      <td>2.970913e+10</td>
-      <td>7.531780e+09</td>
-      <td>-4.470551e+09</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-    </tr>
-    <tr>
-      <th>71</th>
-      <td>71</td>
-      <td>AJG</td>
-      <td>2016-12-31</td>
-      <td>3.768200e+09</td>
-      <td>-240000000.0</td>
-      <td>0.0</td>
-      <td>12.0</td>
-      <td>-217800000.0</td>
-      <td>3.265500e+09</td>
-      <td>NaN</td>
-      <td>...</td>
-      <td>0.000000e+00</td>
-      <td>0.000000e+00</td>
-      <td>3.596600e+09</td>
-      <td>7.893000e+09</td>
-      <td>1.148960e+10</td>
-      <td>5.594800e+09</td>
-      <td>0.000000e+00</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-    </tr>
-    <tr>
-      <th>91</th>
-      <td>91</td>
-      <td>ALLE</td>
-      <td>2016-12-31</td>
-      <td>3.814000e+08</td>
-      <td>-19800000.0</td>
-      <td>-66200000.0</td>
-      <td>202.0</td>
-      <td>-42500000.0</td>
-      <td>0.000000e+00</td>
-      <td>73.0</td>
-      <td>...</td>
-      <td>8.293000e+08</td>
-      <td>4.296000e+08</td>
-      <td>1.133000e+08</td>
-      <td>2.134100e+09</td>
-      <td>2.247400e+09</td>
-      <td>2.238000e+09</td>
-      <td>0.000000e+00</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-    </tr>
-    <tr>
-      <th>95</th>
-      <td>95</td>
-      <td>ALXN</td>
-      <td>2016-12-31</td>
-      <td>5.720000e+08</td>
-      <td>-122000000.0</td>
-      <td>6000000.0</td>
-      <td>5.0</td>
-      <td>-333000000.0</td>
-      <td>7.957000e+09</td>
-      <td>157.0</td>
-      <td>...</td>
-      <td>2.578000e+09</td>
-      <td>8.230000e+08</td>
-      <td>8.694000e+09</td>
-      <td>4.559000e+09</td>
-      <td>1.325300e+10</td>
-      <td>3.084000e+09</td>
-      <td>-1.141000e+09</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-    </tr>
-  </tbody>
-</table>
-<p>5 rows × 79 columns</p>
-</div>
-    <div class="colab-df-buttons">
-
-  <div class="colab-df-container">
-    <button class="colab-df-convert" onclick="convertToInteractive('df-18e41ff1-91b5-4428-ae1b-6669b26f9f63')"
-            title="Convert this dataframe to an interactive table."
-            style="display:none;">
-
-  <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960">
-    <path d="M120-120v-720h720v720H120Zm60-500h600v-160H180v160Zm220 220h160v-160H400v160Zm0 220h160v-160H400v160ZM180-400h160v-160H180v160Zm440 0h160v-160H620v160ZM180-180h160v-160H180v160Zm440 0h160v-160H620v160Z"/>
-  </svg>
-    </button>
-
-  <style>
-    .colab-df-container {
-      display:flex;
-      gap: 12px;
-    }
-
-    .colab-df-convert {
-      background-color: #E8F0FE;
-      border: none;
-      border-radius: 50%;
-      cursor: pointer;
-      display: none;
-      fill: #1967D2;
-      height: 32px;
-      padding: 0 0 0 0;
-      width: 32px;
-    }
-
-    .colab-df-convert:hover {
-      background-color: #E2EBFA;
-      box-shadow: 0px 1px 2px rgba(60, 64, 67, 0.3), 0px 1px 3px 1px rgba(60, 64, 67, 0.15);
-      fill: #174EA6;
-    }
-
-    .colab-df-buttons div {
-      margin-bottom: 4px;
-    }
-
-    [theme=dark] .colab-df-convert {
-      background-color: #3B4455;
-      fill: #D2E3FC;
-    }
-
-    [theme=dark] .colab-df-convert:hover {
-      background-color: #434B5C;
-      box-shadow: 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
-      filter: drop-shadow(0px 1px 2px rgba(0, 0, 0, 0.3));
-      fill: #FFFFFF;
-    }
-  </style>
-
-    <script>
-      const buttonEl =
-        document.querySelector('#df-18e41ff1-91b5-4428-ae1b-6669b26f9f63 button.colab-df-convert');
-      buttonEl.style.display =
-        google.colab.kernel.accessAllowed ? 'block' : 'none';
-
-      async function convertToInteractive(key) {
-        const element = document.querySelector('#df-18e41ff1-91b5-4428-ae1b-6669b26f9f63');
-        const dataTable =
-          await google.colab.kernel.invokeFunction('convertToInteractive',
-                                                    [key], {});
-        if (!dataTable) return;
-
-        const docLinkHtml = 'Like what you see? Visit the ' +
-          '<a target="_blank" href=https://colab.research.google.com/notebooks/data_table.ipynb>data table notebook</a>'
-          + ' to learn more about interactive tables.';
-        element.innerHTML = '';
-        dataTable['output_type'] = 'display_data';
-        await google.colab.output.renderOutput(dataTable, element);
-        const docLink = document.createElement('div');
-        docLink.innerHTML = docLinkHtml;
-        element.appendChild(docLink);
-      }
-    </script>
-  </div>
-
-
-<div id="df-e3a7ae60-2704-4f98-85cc-19752bc1ee85">
-  <button class="colab-df-quickchart" onclick="quickchart('df-e3a7ae60-2704-4f98-85cc-19752bc1ee85')"
-            title="Suggest charts"
-            style="display:none;">
-
-<svg xmlns="http://www.w3.org/2000/svg" height="24px"viewBox="0 0 24 24"
-     width="24px">
-    <g>
-        <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/>
-    </g>
-</svg>
-  </button>
-
-<style>
-  .colab-df-quickchart {
-      --bg-color: #E8F0FE;
-      --fill-color: #1967D2;
-      --hover-bg-color: #E2EBFA;
-      --hover-fill-color: #174EA6;
-      --disabled-fill-color: #AAA;
-      --disabled-bg-color: #DDD;
-  }
-
-  [theme=dark] .colab-df-quickchart {
-      --bg-color: #3B4455;
-      --fill-color: #D2E3FC;
-      --hover-bg-color: #434B5C;
-      --hover-fill-color: #FFFFFF;
-      --disabled-bg-color: #3B4455;
-      --disabled-fill-color: #666;
-  }
-
-  .colab-df-quickchart {
-    background-color: var(--bg-color);
-    border: none;
-    border-radius: 50%;
-    cursor: pointer;
-    display: none;
-    fill: var(--fill-color);
-    height: 32px;
-    padding: 0;
-    width: 32px;
-  }
-
-  .colab-df-quickchart:hover {
-    background-color: var(--hover-bg-color);
-    box-shadow: 0 1px 2px rgba(60, 64, 67, 0.3), 0 1px 3px 1px rgba(60, 64, 67, 0.15);
-    fill: var(--button-hover-fill-color);
-  }
-
-  .colab-df-quickchart-complete:disabled,
-  .colab-df-quickchart-complete:disabled:hover {
-    background-color: var(--disabled-bg-color);
-    fill: var(--disabled-fill-color);
-    box-shadow: none;
-  }
-
-  .colab-df-spinner {
-    border: 2px solid var(--fill-color);
-    border-color: transparent;
-    border-bottom-color: var(--fill-color);
-    animation:
-      spin 1s steps(1) infinite;
-  }
-
-  @keyframes spin {
-    0% {
-      border-color: transparent;
-      border-bottom-color: var(--fill-color);
-      border-left-color: var(--fill-color);
-    }
-    20% {
-      border-color: transparent;
-      border-left-color: var(--fill-color);
-      border-top-color: var(--fill-color);
-    }
-    30% {
-      border-color: transparent;
-      border-left-color: var(--fill-color);
-      border-top-color: var(--fill-color);
-      border-right-color: var(--fill-color);
-    }
-    40% {
-      border-color: transparent;
-      border-right-color: var(--fill-color);
-      border-top-color: var(--fill-color);
-    }
-    60% {
-      border-color: transparent;
-      border-right-color: var(--fill-color);
-    }
-    80% {
-      border-color: transparent;
-      border-right-color: var(--fill-color);
-      border-bottom-color: var(--fill-color);
-    }
-    90% {
-      border-color: transparent;
-      border-bottom-color: var(--fill-color);
-    }
-  }
-</style>
-
-  <script>
-    async function quickchart(key) {
-      const quickchartButtonEl =
-        document.querySelector('#' + key + ' button');
-      quickchartButtonEl.disabled = true;  // To prevent multiple clicks.
-      quickchartButtonEl.classList.add('colab-df-spinner');
-      try {
-        const charts = await google.colab.kernel.invokeFunction(
-            'suggestCharts', [key], {});
-      } catch (error) {
-        console.error('Error during call to suggestCharts:', error);
-      }
-      quickchartButtonEl.classList.remove('colab-df-spinner');
-      quickchartButtonEl.classList.add('colab-df-quickchart-complete');
-    }
-    (() => {
-      let quickchartButtonEl =
-        document.querySelector('#df-e3a7ae60-2704-4f98-85cc-19752bc1ee85 button');
-      quickchartButtonEl.style.display =
-        google.colab.kernel.accessAllowed ? 'block' : 'none';
-    })();
-  </script>
-</div>
-    </div>
-  </div>
-
-
-
-
-
-```python
+::: {.cell .code execution_count="9" colab="{\"base_uri\":\"https://localhost:8080/\"}" id="e2Ox-Vlrjq7t" outputId="c08a703e-95f0-4669-9b2e-4ca33c7fa42f"}
+``` python
 # check #2
 filtered_fundamentals['Period Ending'].value_counts()
 ```
 
-
-
-
+::: {.output .execute_result execution_count="9"}
     2016-12-31    97
     2016-12-02     1
     2016-12-30     1
     Name: Period Ending, dtype: int64
+:::
+:::
 
-
-
-
-```python
+::: {.cell .code execution_count="10" colab="{\"base_uri\":\"https://localhost:8080/\"}" id="IQ6n1K0Dl-51" outputId="a106facb-16aa-4b3b-dbd5-142bab27601d"}
+``` python
 # check 3
 filtered_fundamentals.info()
 ```
 
+::: {.output .stream .stdout}
     <class 'pandas.core.frame.DataFrame'>
     Int64Index: 99 entries, 27 to 1780
     Data columns (total 79 columns):
@@ -1036,18 +331,17 @@ filtered_fundamentals.info()
      78  Estimated Shares Outstanding                         0 non-null      float64       
     dtypes: datetime64[ns](1), float64(76), int64(1), object(1)
     memory usage: 61.9+ KB
-    
+:::
+:::
 
-
-```python
+::: {.cell .code execution_count="11" colab="{\"base_uri\":\"https://localhost:8080/\"}" id="eO2yemL-hAs9" outputId="64d40b51-c51d-4125-c408-dad389c7b2a2"}
+``` python
 # check 4
 # we have 99 different stocks
 filtered_fundamentals['Ticker Symbol'].value_counts()
 ```
 
-
-
-
+::: {.output .execute_result execution_count="11"}
     ADBE     1
     PG       1
     PEP      1
@@ -1060,30 +354,33 @@ filtered_fundamentals['Ticker Symbol'].value_counts()
     DISCA    1
     ZTS      1
     Name: Ticker Symbol, Length: 99, dtype: int64
+:::
+:::
 
-
-
-
-```python
+::: {.cell .code execution_count="12" colab="{\"base_uri\":\"https://localhost:8080/\"}" id="Om6yb7-373Oe" outputId="cfd11d6c-313a-4a81-a30a-b2a298dfe7e6"}
+``` python
 # drop uneccesary columns
 ## Unnamed column
 filtered_fundamentals.drop(columns = ['Unnamed: 0', 'Period Ending'], axis = 1, inplace = True)
 ```
 
+::: {.output .stream .stderr}
     <ipython-input-12-4f0692c2dfef>:3: SettingWithCopyWarning: 
     A value is trying to be set on a copy of a slice from a DataFrame
-    
+
     See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
       filtered_fundamentals.drop(columns = ['Unnamed: 0', 'Period Ending'], axis = 1, inplace = True)
-    
+:::
+:::
 
-
-```python
+::: {.cell .code execution_count="13" colab="{\"base_uri\":\"https://localhost:8080/\"}" id="ZzqweDLZ8mhZ" outputId="f7f3ff62-90be-4931-801c-0b8465730e64"}
+``` python
 # check
 # first few rows of the data
 filtered_fundamentals.info()
 ```
 
+::: {.output .stream .stdout}
     <class 'pandas.core.frame.DataFrame'>
     Int64Index: 99 entries, 27 to 1780
     Data columns (total 77 columns):
@@ -1168,14 +465,19 @@ filtered_fundamentals.info()
      76  Estimated Shares Outstanding                         0 non-null      float64
     dtypes: float64(76), object(1)
     memory usage: 60.3+ KB
-    
+:::
+:::
 
-There is also `Ticker Symbol` column that I need to manage in order to properly apply PCA as PCA should be used on numerical values.
+::: {.cell .markdown id="csqc6JcC9c8J"}
+There is also `Ticker Symbol` column that I need to manage in order to
+properly apply PCA as PCA should be used on numerical values.
 
-Another important step is to remove null values in `CurrentRation` column, I am going to replace all null values with 0.
+Another important step is to remove null values in `CurrentRation`
+column, I am going to replace all null values with 0.
+:::
 
-
-```python
+::: {.cell .code execution_count="14" id="HuribHIB90NV"}
+``` python
 # make ticker symbols column as an index
 filtered_fundamentals = filtered_fundamentals.set_index(['Ticker Symbol'])
 # transform everything to numeric datatype
@@ -1183,17 +485,16 @@ filtered_fundamentals = filtered_fundamentals.apply(pd.to_numeric, errors = 'coe
 # fill null values with 0 in dataframe
 filtered_fundamentals = filtered_fundamentals.fillna(0)
 ```
+:::
 
-
-```python
+::: {.cell .code execution_count="15" colab="{\"base_uri\":\"https://localhost:8080/\"}" id="Rgn6MJb990Kv" outputId="e4b542a9-7f82-4da1-a5b5-42ffc4f66caa"}
+``` python
 # check number of na rows
 filtered_fundamentals.isnull().sum()
 # there are no null values anymore
 ```
 
-
-
-
+::: {.output .execute_result execution_count="15"}
     Accounts Payable                0
     Accounts Receivable             0
     Add'l income/expense items      0
@@ -1206,15 +507,16 @@ filtered_fundamentals.isnull().sum()
     Earnings Per Share              0
     Estimated Shares Outstanding    0
     Length: 76, dtype: int64
+:::
+:::
 
-
-
-
-```python
+::: {.cell .code execution_count="16" colab="{\"base_uri\":\"https://localhost:8080/\"}" id="bXtm5E5a9zjI" outputId="fd78abf5-e0ab-4a25-d93e-f61ee836f828"}
+``` python
 # check datatypes
 filtered_fundamentals.info()
 ```
 
+::: {.output .stream .stdout}
     <class 'pandas.core.frame.DataFrame'>
     Index: 99 entries, ADBE to ZTS
     Data columns (total 76 columns):
@@ -1298,1289 +600,83 @@ filtered_fundamentals.info()
      75  Estimated Shares Outstanding                         99 non-null     float64
     dtypes: float64(76)
     memory usage: 59.6+ KB
-    
+:::
+:::
 
-
-```python
+::: {.cell .code colab="{\"base_uri\":\"https://localhost:8080/\",\"height\":339}" id="MYYlZmIv-59c" outputId="93cb59db-ebde-4f4d-f3ae-bb1d7004a952"}
+``` python
 # first few rows of the dataset
 filtered_fundamentals.head()
 ```
 
+::: {.output .execute_result execution_count="15"}
+``` json
+{"type":"dataframe","variable_name":"filtered_fundamentals"}
+```
+:::
+:::
 
+::: {.cell .markdown id="OVGO4YDp-4EG"}
+There are no null values in the data and all datatypes are numeric now.
+There are now 99 rows and 76 columns. I need to apply PCA and reduce
+dimensionality while capturing most of the variance in the data.
+:::
 
-
-
-  <div id="df-975cad77-ccc6-4001-9962-61d3316c1615" class="colab-df-container">
-    <div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>Accounts Payable</th>
-      <th>Accounts Receivable</th>
-      <th>Add'l income/expense items</th>
-      <th>After Tax ROE</th>
-      <th>Capital Expenditures</th>
-      <th>Capital Surplus</th>
-      <th>Cash Ratio</th>
-      <th>Cash and Cash Equivalents</th>
-      <th>Changes in Inventories</th>
-      <th>Common Stocks</th>
-      <th>...</th>
-      <th>Total Current Assets</th>
-      <th>Total Current Liabilities</th>
-      <th>Total Equity</th>
-      <th>Total Liabilities</th>
-      <th>Total Liabilities &amp; Equity</th>
-      <th>Total Revenue</th>
-      <th>Treasury Stock</th>
-      <th>For Year</th>
-      <th>Earnings Per Share</th>
-      <th>Estimated Shares Outstanding</th>
-    </tr>
-    <tr>
-      <th>Ticker Symbol</th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>ADBE</th>
-      <td>8.660160e+08</td>
-      <td>-160416000.0</td>
-      <td>11978000.0</td>
-      <td>16.0</td>
-      <td>-203805000.0</td>
-      <td>4.616331e+09</td>
-      <td>169.0</td>
-      <td>1.011315e+09</td>
-      <td>0.0</td>
-      <td>61000.0</td>
-      <td>...</td>
-      <td>5.839774e+09</td>
-      <td>2.811635e+09</td>
-      <td>7.424835e+09</td>
-      <td>5.282279e+09</td>
-      <td>1.270711e+10</td>
-      <td>5.854430e+09</td>
-      <td>-5.132472e+09</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-    </tr>
-    <tr>
-      <th>AIZ</th>
-      <td>2.080962e+09</td>
-      <td>9275000.0</td>
-      <td>-23031000.0</td>
-      <td>14.0</td>
-      <td>-85233000.0</td>
-      <td>3.175867e+09</td>
-      <td>0.0</td>
-      <td>1.031971e+09</td>
-      <td>4579000.0</td>
-      <td>1504000.0</td>
-      <td>...</td>
-      <td>0.000000e+00</td>
-      <td>0.000000e+00</td>
-      <td>4.098100e+09</td>
-      <td>2.561103e+10</td>
-      <td>2.970913e+10</td>
-      <td>7.531780e+09</td>
-      <td>-4.470551e+09</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-    </tr>
-    <tr>
-      <th>AJG</th>
-      <td>3.768200e+09</td>
-      <td>-240000000.0</td>
-      <td>0.0</td>
-      <td>12.0</td>
-      <td>-217800000.0</td>
-      <td>3.265500e+09</td>
-      <td>0.0</td>
-      <td>1.937600e+09</td>
-      <td>0.0</td>
-      <td>178300000.0</td>
-      <td>...</td>
-      <td>0.000000e+00</td>
-      <td>0.000000e+00</td>
-      <td>3.596600e+09</td>
-      <td>7.893000e+09</td>
-      <td>1.148960e+10</td>
-      <td>5.594800e+09</td>
-      <td>0.000000e+00</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-    </tr>
-    <tr>
-      <th>ALLE</th>
-      <td>3.814000e+08</td>
-      <td>-19800000.0</td>
-      <td>-66200000.0</td>
-      <td>202.0</td>
-      <td>-42500000.0</td>
-      <td>0.000000e+00</td>
-      <td>73.0</td>
-      <td>3.124000e+08</td>
-      <td>-15600000.0</td>
-      <td>1000000.0</td>
-      <td>...</td>
-      <td>8.293000e+08</td>
-      <td>4.296000e+08</td>
-      <td>1.133000e+08</td>
-      <td>2.134100e+09</td>
-      <td>2.247400e+09</td>
-      <td>2.238000e+09</td>
-      <td>0.000000e+00</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-    </tr>
-    <tr>
-      <th>ALXN</th>
-      <td>5.720000e+08</td>
-      <td>-122000000.0</td>
-      <td>6000000.0</td>
-      <td>5.0</td>
-      <td>-333000000.0</td>
-      <td>7.957000e+09</td>
-      <td>157.0</td>
-      <td>9.660000e+08</td>
-      <td>-84000000.0</td>
-      <td>0.0</td>
-      <td>...</td>
-      <td>2.578000e+09</td>
-      <td>8.230000e+08</td>
-      <td>8.694000e+09</td>
-      <td>4.559000e+09</td>
-      <td>1.325300e+10</td>
-      <td>3.084000e+09</td>
-      <td>-1.141000e+09</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-    </tr>
-  </tbody>
-</table>
-<p>5 rows × 76 columns</p>
-</div>
-    <div class="colab-df-buttons">
-
-  <div class="colab-df-container">
-    <button class="colab-df-convert" onclick="convertToInteractive('df-975cad77-ccc6-4001-9962-61d3316c1615')"
-            title="Convert this dataframe to an interactive table."
-            style="display:none;">
-
-  <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960">
-    <path d="M120-120v-720h720v720H120Zm60-500h600v-160H180v160Zm220 220h160v-160H400v160Zm0 220h160v-160H400v160ZM180-400h160v-160H180v160Zm440 0h160v-160H620v160ZM180-180h160v-160H180v160Zm440 0h160v-160H620v160Z"/>
-  </svg>
-    </button>
-
-  <style>
-    .colab-df-container {
-      display:flex;
-      gap: 12px;
-    }
-
-    .colab-df-convert {
-      background-color: #E8F0FE;
-      border: none;
-      border-radius: 50%;
-      cursor: pointer;
-      display: none;
-      fill: #1967D2;
-      height: 32px;
-      padding: 0 0 0 0;
-      width: 32px;
-    }
-
-    .colab-df-convert:hover {
-      background-color: #E2EBFA;
-      box-shadow: 0px 1px 2px rgba(60, 64, 67, 0.3), 0px 1px 3px 1px rgba(60, 64, 67, 0.15);
-      fill: #174EA6;
-    }
-
-    .colab-df-buttons div {
-      margin-bottom: 4px;
-    }
-
-    [theme=dark] .colab-df-convert {
-      background-color: #3B4455;
-      fill: #D2E3FC;
-    }
-
-    [theme=dark] .colab-df-convert:hover {
-      background-color: #434B5C;
-      box-shadow: 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
-      filter: drop-shadow(0px 1px 2px rgba(0, 0, 0, 0.3));
-      fill: #FFFFFF;
-    }
-  </style>
-
-    <script>
-      const buttonEl =
-        document.querySelector('#df-975cad77-ccc6-4001-9962-61d3316c1615 button.colab-df-convert');
-      buttonEl.style.display =
-        google.colab.kernel.accessAllowed ? 'block' : 'none';
-
-      async function convertToInteractive(key) {
-        const element = document.querySelector('#df-975cad77-ccc6-4001-9962-61d3316c1615');
-        const dataTable =
-          await google.colab.kernel.invokeFunction('convertToInteractive',
-                                                    [key], {});
-        if (!dataTable) return;
-
-        const docLinkHtml = 'Like what you see? Visit the ' +
-          '<a target="_blank" href=https://colab.research.google.com/notebooks/data_table.ipynb>data table notebook</a>'
-          + ' to learn more about interactive tables.';
-        element.innerHTML = '';
-        dataTable['output_type'] = 'display_data';
-        await google.colab.output.renderOutput(dataTable, element);
-        const docLink = document.createElement('div');
-        docLink.innerHTML = docLinkHtml;
-        element.appendChild(docLink);
-      }
-    </script>
-  </div>
-
-
-<div id="df-bf90fc17-5eb9-49c9-95cb-47a6e312b1a8">
-  <button class="colab-df-quickchart" onclick="quickchart('df-bf90fc17-5eb9-49c9-95cb-47a6e312b1a8')"
-            title="Suggest charts"
-            style="display:none;">
-
-<svg xmlns="http://www.w3.org/2000/svg" height="24px"viewBox="0 0 24 24"
-     width="24px">
-    <g>
-        <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/>
-    </g>
-</svg>
-  </button>
-
-<style>
-  .colab-df-quickchart {
-      --bg-color: #E8F0FE;
-      --fill-color: #1967D2;
-      --hover-bg-color: #E2EBFA;
-      --hover-fill-color: #174EA6;
-      --disabled-fill-color: #AAA;
-      --disabled-bg-color: #DDD;
-  }
-
-  [theme=dark] .colab-df-quickchart {
-      --bg-color: #3B4455;
-      --fill-color: #D2E3FC;
-      --hover-bg-color: #434B5C;
-      --hover-fill-color: #FFFFFF;
-      --disabled-bg-color: #3B4455;
-      --disabled-fill-color: #666;
-  }
-
-  .colab-df-quickchart {
-    background-color: var(--bg-color);
-    border: none;
-    border-radius: 50%;
-    cursor: pointer;
-    display: none;
-    fill: var(--fill-color);
-    height: 32px;
-    padding: 0;
-    width: 32px;
-  }
-
-  .colab-df-quickchart:hover {
-    background-color: var(--hover-bg-color);
-    box-shadow: 0 1px 2px rgba(60, 64, 67, 0.3), 0 1px 3px 1px rgba(60, 64, 67, 0.15);
-    fill: var(--button-hover-fill-color);
-  }
-
-  .colab-df-quickchart-complete:disabled,
-  .colab-df-quickchart-complete:disabled:hover {
-    background-color: var(--disabled-bg-color);
-    fill: var(--disabled-fill-color);
-    box-shadow: none;
-  }
-
-  .colab-df-spinner {
-    border: 2px solid var(--fill-color);
-    border-color: transparent;
-    border-bottom-color: var(--fill-color);
-    animation:
-      spin 1s steps(1) infinite;
-  }
-
-  @keyframes spin {
-    0% {
-      border-color: transparent;
-      border-bottom-color: var(--fill-color);
-      border-left-color: var(--fill-color);
-    }
-    20% {
-      border-color: transparent;
-      border-left-color: var(--fill-color);
-      border-top-color: var(--fill-color);
-    }
-    30% {
-      border-color: transparent;
-      border-left-color: var(--fill-color);
-      border-top-color: var(--fill-color);
-      border-right-color: var(--fill-color);
-    }
-    40% {
-      border-color: transparent;
-      border-right-color: var(--fill-color);
-      border-top-color: var(--fill-color);
-    }
-    60% {
-      border-color: transparent;
-      border-right-color: var(--fill-color);
-    }
-    80% {
-      border-color: transparent;
-      border-right-color: var(--fill-color);
-      border-bottom-color: var(--fill-color);
-    }
-    90% {
-      border-color: transparent;
-      border-bottom-color: var(--fill-color);
-    }
-  }
-</style>
-
-  <script>
-    async function quickchart(key) {
-      const quickchartButtonEl =
-        document.querySelector('#' + key + ' button');
-      quickchartButtonEl.disabled = true;  // To prevent multiple clicks.
-      quickchartButtonEl.classList.add('colab-df-spinner');
-      try {
-        const charts = await google.colab.kernel.invokeFunction(
-            'suggestCharts', [key], {});
-      } catch (error) {
-        console.error('Error during call to suggestCharts:', error);
-      }
-      quickchartButtonEl.classList.remove('colab-df-spinner');
-      quickchartButtonEl.classList.add('colab-df-quickchart-complete');
-    }
-    (() => {
-      let quickchartButtonEl =
-        document.querySelector('#df-bf90fc17-5eb9-49c9-95cb-47a6e312b1a8 button');
-      quickchartButtonEl.style.display =
-        google.colab.kernel.accessAllowed ? 'block' : 'none';
-    })();
-  </script>
-</div>
-    </div>
-  </div>
-
-
-
-
-There are no null values in the data and all datatypes are numeric now. There are now 99 rows and 76 columns. I need to apply PCA and reduce dimensionality while capturing most of the variance in the data.
-
+::: {.cell .markdown id="hYZuabEYmddD"}
 ## Principal Component Analysis
-Before I can apply PCA on my data, all numeric variables should be normalized for a proper analysis. That's why I am going to use a standard normalization, or z-statistic normalization for all my numeric variables.
 
+Before I can apply PCA on my data, all numeric variables should be
+normalized for a proper analysis. That\'s why I am going to use a
+standard normalization, or z-statistic normalization for all my numeric
+variables.
+:::
 
-```python
+::: {.cell .code execution_count="17" id="YDfEr4J8maMZ"}
+``` python
 # standard scaler
 scaler = StandardScaler()
 
 # object that will have standardized variables
 fundamentals_norm = pd.DataFrame(scaler.fit_transform(filtered_fundamentals), columns = filtered_fundamentals.columns)
 ```
+:::
 
-
-```python
+::: {.cell .code execution_count="18" colab="{\"base_uri\":\"https://localhost:8080/\",\"height\":384}" id="mJ_k-6xonarh" outputId="0603ecd3-5894-44ef-c5e6-880e50f91649"}
+``` python
 # summary to show if normalization worked
 fundamentals_norm.describe()
 ```
 
+::: {.output .execute_result execution_count="18"}
+``` json
+{"type":"dataframe"}
+```
+:::
+:::
 
-
-
-
-  <div id="df-df39658d-fd53-461d-bc73-1db4da51b29b" class="colab-df-container">
-    <div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>Accounts Payable</th>
-      <th>Accounts Receivable</th>
-      <th>Add'l income/expense items</th>
-      <th>After Tax ROE</th>
-      <th>Capital Expenditures</th>
-      <th>Capital Surplus</th>
-      <th>Cash Ratio</th>
-      <th>Cash and Cash Equivalents</th>
-      <th>Changes in Inventories</th>
-      <th>Common Stocks</th>
-      <th>...</th>
-      <th>Total Current Assets</th>
-      <th>Total Current Liabilities</th>
-      <th>Total Equity</th>
-      <th>Total Liabilities</th>
-      <th>Total Liabilities &amp; Equity</th>
-      <th>Total Revenue</th>
-      <th>Treasury Stock</th>
-      <th>For Year</th>
-      <th>Earnings Per Share</th>
-      <th>Estimated Shares Outstanding</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>count</th>
-      <td>9.900000e+01</td>
-      <td>9.900000e+01</td>
-      <td>9.900000e+01</td>
-      <td>9.900000e+01</td>
-      <td>9.900000e+01</td>
-      <td>9.900000e+01</td>
-      <td>9.900000e+01</td>
-      <td>9.900000e+01</td>
-      <td>9.900000e+01</td>
-      <td>9.900000e+01</td>
-      <td>...</td>
-      <td>9.900000e+01</td>
-      <td>9.900000e+01</td>
-      <td>9.900000e+01</td>
-      <td>9.900000e+01</td>
-      <td>9.900000e+01</td>
-      <td>9.900000e+01</td>
-      <td>9.900000e+01</td>
-      <td>99.0</td>
-      <td>99.0</td>
-      <td>99.0</td>
-    </tr>
-    <tr>
-      <th>mean</th>
-      <td>3.812887e-17</td>
-      <td>-1.233581e-17</td>
-      <td>-1.345725e-17</td>
-      <td>-1.082888e-17</td>
-      <td>6.840768e-17</td>
-      <td>2.242875e-18</td>
-      <td>1.489409e-18</td>
-      <td>-7.008984e-18</td>
-      <td>2.355019e-17</td>
-      <td>3.476456e-17</td>
-      <td>...</td>
-      <td>8.971499e-18</td>
-      <td>4.990396e-17</td>
-      <td>-3.700743e-17</td>
-      <td>-1.570012e-17</td>
-      <td>9.083643e-17</td>
-      <td>3.308240e-17</td>
-      <td>2.467162e-17</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-    </tr>
-    <tr>
-      <th>std</th>
-      <td>1.005089e+00</td>
-      <td>1.005089e+00</td>
-      <td>1.005089e+00</td>
-      <td>1.005089e+00</td>
-      <td>1.005089e+00</td>
-      <td>1.005089e+00</td>
-      <td>1.005089e+00</td>
-      <td>1.005089e+00</td>
-      <td>1.005089e+00</td>
-      <td>1.005089e+00</td>
-      <td>...</td>
-      <td>1.005089e+00</td>
-      <td>1.005089e+00</td>
-      <td>1.005089e+00</td>
-      <td>1.005089e+00</td>
-      <td>1.005089e+00</td>
-      <td>1.005089e+00</td>
-      <td>1.005089e+00</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-    </tr>
-    <tr>
-      <th>min</th>
-      <td>-5.572983e-01</td>
-      <td>-5.842321e+00</td>
-      <td>-2.389050e+00</td>
-      <td>-2.619738e-01</td>
-      <td>-4.123848e+00</td>
-      <td>-6.530631e-01</td>
-      <td>-5.538382e-01</td>
-      <td>-2.505287e-01</td>
-      <td>-3.093597e+00</td>
-      <td>-3.110193e-01</td>
-      <td>...</td>
-      <td>-5.846669e-01</td>
-      <td>-5.083298e-01</td>
-      <td>-1.874118e+00</td>
-      <td>-6.560521e-01</td>
-      <td>-7.478530e-01</td>
-      <td>-6.081754e-01</td>
-      <td>-3.459925e+00</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-    </tr>
-    <tr>
-      <th>25%</th>
-      <td>-4.633142e-01</td>
-      <td>-1.400747e-02</td>
-      <td>-2.121788e-01</td>
-      <td>-2.125131e-01</td>
-      <td>-1.538561e-01</td>
-      <td>-6.043762e-01</td>
-      <td>-4.250123e-01</td>
-      <td>-2.232486e-01</td>
-      <td>-9.878170e-02</td>
-      <td>-3.106388e-01</td>
-      <td>...</td>
-      <td>-4.594576e-01</td>
-      <td>-4.326361e-01</td>
-      <td>-6.051258e-01</td>
-      <td>-5.233013e-01</td>
-      <td>-5.808073e-01</td>
-      <td>-4.759785e-01</td>
-      <td>-1.142553e-01</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-    </tr>
-    <tr>
-      <th>50%</th>
-      <td>-3.337615e-01</td>
-      <td>2.268168e-01</td>
-      <td>-7.192636e-02</td>
-      <td>-1.855345e-01</td>
-      <td>3.911792e-01</td>
-      <td>-3.347610e-01</td>
-      <td>-2.878750e-01</td>
-      <td>-1.867831e-01</td>
-      <td>-1.734517e-02</td>
-      <td>-3.077844e-01</td>
-      <td>...</td>
-      <td>-3.788483e-01</td>
-      <td>-3.148813e-01</td>
-      <td>-3.589456e-01</td>
-      <td>-3.920960e-01</td>
-      <td>-3.715790e-01</td>
-      <td>-3.388296e-01</td>
-      <td>4.699595e-01</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-    </tr>
-    <tr>
-      <th>75%</th>
-      <td>-1.315102e-01</td>
-      <td>3.238790e-01</td>
-      <td>5.320550e-02</td>
-      <td>-1.293291e-01</td>
-      <td>5.880183e-01</td>
-      <td>1.498103e-01</td>
-      <td>7.366879e-02</td>
-      <td>-6.959544e-02</td>
-      <td>-1.734517e-02</td>
-      <td>-2.313821e-01</td>
-      <td>...</td>
-      <td>-4.058344e-02</td>
-      <td>-7.565692e-02</td>
-      <td>1.496974e-01</td>
-      <td>1.100645e-01</td>
-      <td>1.484804e-01</td>
-      <td>-6.665996e-02</td>
-      <td>5.857355e-01</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-    </tr>
-    <tr>
-      <th>max</th>
-      <td>5.510885e+00</td>
-      <td>1.970275e+00</td>
-      <td>6.380328e+00</td>
-      <td>9.283947e+00</td>
-      <td>6.862839e-01</td>
-      <td>4.369852e+00</td>
-      <td>7.956985e+00</td>
-      <td>9.662578e+00</td>
-      <td>8.083163e+00</td>
-      <td>5.546935e+00</td>
-      <td>...</td>
-      <td>6.000373e+00</td>
-      <td>5.819472e+00</td>
-      <td>4.549106e+00</td>
-      <td>4.466455e+00</td>
-      <td>4.060852e+00</td>
-      <td>4.432801e+00</td>
-      <td>5.857355e-01</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-    </tr>
-  </tbody>
-</table>
-<p>8 rows × 76 columns</p>
-</div>
-    <div class="colab-df-buttons">
-
-  <div class="colab-df-container">
-    <button class="colab-df-convert" onclick="convertToInteractive('df-df39658d-fd53-461d-bc73-1db4da51b29b')"
-            title="Convert this dataframe to an interactive table."
-            style="display:none;">
-
-  <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960">
-    <path d="M120-120v-720h720v720H120Zm60-500h600v-160H180v160Zm220 220h160v-160H400v160Zm0 220h160v-160H400v160ZM180-400h160v-160H180v160Zm440 0h160v-160H620v160ZM180-180h160v-160H180v160Zm440 0h160v-160H620v160Z"/>
-  </svg>
-    </button>
-
-  <style>
-    .colab-df-container {
-      display:flex;
-      gap: 12px;
-    }
-
-    .colab-df-convert {
-      background-color: #E8F0FE;
-      border: none;
-      border-radius: 50%;
-      cursor: pointer;
-      display: none;
-      fill: #1967D2;
-      height: 32px;
-      padding: 0 0 0 0;
-      width: 32px;
-    }
-
-    .colab-df-convert:hover {
-      background-color: #E2EBFA;
-      box-shadow: 0px 1px 2px rgba(60, 64, 67, 0.3), 0px 1px 3px 1px rgba(60, 64, 67, 0.15);
-      fill: #174EA6;
-    }
-
-    .colab-df-buttons div {
-      margin-bottom: 4px;
-    }
-
-    [theme=dark] .colab-df-convert {
-      background-color: #3B4455;
-      fill: #D2E3FC;
-    }
-
-    [theme=dark] .colab-df-convert:hover {
-      background-color: #434B5C;
-      box-shadow: 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
-      filter: drop-shadow(0px 1px 2px rgba(0, 0, 0, 0.3));
-      fill: #FFFFFF;
-    }
-  </style>
-
-    <script>
-      const buttonEl =
-        document.querySelector('#df-df39658d-fd53-461d-bc73-1db4da51b29b button.colab-df-convert');
-      buttonEl.style.display =
-        google.colab.kernel.accessAllowed ? 'block' : 'none';
-
-      async function convertToInteractive(key) {
-        const element = document.querySelector('#df-df39658d-fd53-461d-bc73-1db4da51b29b');
-        const dataTable =
-          await google.colab.kernel.invokeFunction('convertToInteractive',
-                                                    [key], {});
-        if (!dataTable) return;
-
-        const docLinkHtml = 'Like what you see? Visit the ' +
-          '<a target="_blank" href=https://colab.research.google.com/notebooks/data_table.ipynb>data table notebook</a>'
-          + ' to learn more about interactive tables.';
-        element.innerHTML = '';
-        dataTable['output_type'] = 'display_data';
-        await google.colab.output.renderOutput(dataTable, element);
-        const docLink = document.createElement('div');
-        docLink.innerHTML = docLinkHtml;
-        element.appendChild(docLink);
-      }
-    </script>
-  </div>
-
-
-<div id="df-03848b5b-2c61-4bc2-b9c6-cf38801c6df7">
-  <button class="colab-df-quickchart" onclick="quickchart('df-03848b5b-2c61-4bc2-b9c6-cf38801c6df7')"
-            title="Suggest charts"
-            style="display:none;">
-
-<svg xmlns="http://www.w3.org/2000/svg" height="24px"viewBox="0 0 24 24"
-     width="24px">
-    <g>
-        <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/>
-    </g>
-</svg>
-  </button>
-
-<style>
-  .colab-df-quickchart {
-      --bg-color: #E8F0FE;
-      --fill-color: #1967D2;
-      --hover-bg-color: #E2EBFA;
-      --hover-fill-color: #174EA6;
-      --disabled-fill-color: #AAA;
-      --disabled-bg-color: #DDD;
-  }
-
-  [theme=dark] .colab-df-quickchart {
-      --bg-color: #3B4455;
-      --fill-color: #D2E3FC;
-      --hover-bg-color: #434B5C;
-      --hover-fill-color: #FFFFFF;
-      --disabled-bg-color: #3B4455;
-      --disabled-fill-color: #666;
-  }
-
-  .colab-df-quickchart {
-    background-color: var(--bg-color);
-    border: none;
-    border-radius: 50%;
-    cursor: pointer;
-    display: none;
-    fill: var(--fill-color);
-    height: 32px;
-    padding: 0;
-    width: 32px;
-  }
-
-  .colab-df-quickchart:hover {
-    background-color: var(--hover-bg-color);
-    box-shadow: 0 1px 2px rgba(60, 64, 67, 0.3), 0 1px 3px 1px rgba(60, 64, 67, 0.15);
-    fill: var(--button-hover-fill-color);
-  }
-
-  .colab-df-quickchart-complete:disabled,
-  .colab-df-quickchart-complete:disabled:hover {
-    background-color: var(--disabled-bg-color);
-    fill: var(--disabled-fill-color);
-    box-shadow: none;
-  }
-
-  .colab-df-spinner {
-    border: 2px solid var(--fill-color);
-    border-color: transparent;
-    border-bottom-color: var(--fill-color);
-    animation:
-      spin 1s steps(1) infinite;
-  }
-
-  @keyframes spin {
-    0% {
-      border-color: transparent;
-      border-bottom-color: var(--fill-color);
-      border-left-color: var(--fill-color);
-    }
-    20% {
-      border-color: transparent;
-      border-left-color: var(--fill-color);
-      border-top-color: var(--fill-color);
-    }
-    30% {
-      border-color: transparent;
-      border-left-color: var(--fill-color);
-      border-top-color: var(--fill-color);
-      border-right-color: var(--fill-color);
-    }
-    40% {
-      border-color: transparent;
-      border-right-color: var(--fill-color);
-      border-top-color: var(--fill-color);
-    }
-    60% {
-      border-color: transparent;
-      border-right-color: var(--fill-color);
-    }
-    80% {
-      border-color: transparent;
-      border-right-color: var(--fill-color);
-      border-bottom-color: var(--fill-color);
-    }
-    90% {
-      border-color: transparent;
-      border-bottom-color: var(--fill-color);
-    }
-  }
-</style>
-
-  <script>
-    async function quickchart(key) {
-      const quickchartButtonEl =
-        document.querySelector('#' + key + ' button');
-      quickchartButtonEl.disabled = true;  // To prevent multiple clicks.
-      quickchartButtonEl.classList.add('colab-df-spinner');
-      try {
-        const charts = await google.colab.kernel.invokeFunction(
-            'suggestCharts', [key], {});
-      } catch (error) {
-        console.error('Error during call to suggestCharts:', error);
-      }
-      quickchartButtonEl.classList.remove('colab-df-spinner');
-      quickchartButtonEl.classList.add('colab-df-quickchart-complete');
-    }
-    (() => {
-      let quickchartButtonEl =
-        document.querySelector('#df-03848b5b-2c61-4bc2-b9c6-cf38801c6df7 button');
-      quickchartButtonEl.style.display =
-        google.colab.kernel.accessAllowed ? 'block' : 'none';
-    })();
-  </script>
-</div>
-    </div>
-  </div>
-
-
-
-
-
-```python
+::: {.cell .code execution_count="19" colab="{\"base_uri\":\"https://localhost:8080/\",\"height\":270}" id="2XP46U14nmCU" outputId="37ae5846-daf7-4611-9451-08cc523f6372"}
+``` python
 # head() to show few rows of the normalized data
 fundamentals_norm.head()
 ```
 
+::: {.output .execute_result execution_count="19"}
+``` json
+{"type":"dataframe","variable_name":"fundamentals_norm"}
+```
+:::
+:::
 
+::: {.cell .markdown id="H2su1u4moIsX"}
+As all of the variables in the data normalized, I need to choose number
+of components (variables) that I will include in the data. In order to
+do it, I will compare number of components vs Cumulative Explained
+Variance and I will choose optimal number that has the most of data
+variance saved.
+:::
 
-
-
-  <div id="df-b3a2ed4f-c4a5-424d-a98e-c889eb633370" class="colab-df-container">
-    <div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>Accounts Payable</th>
-      <th>Accounts Receivable</th>
-      <th>Add'l income/expense items</th>
-      <th>After Tax ROE</th>
-      <th>Capital Expenditures</th>
-      <th>Capital Surplus</th>
-      <th>Cash Ratio</th>
-      <th>Cash and Cash Equivalents</th>
-      <th>Changes in Inventories</th>
-      <th>Common Stocks</th>
-      <th>...</th>
-      <th>Total Current Assets</th>
-      <th>Total Current Liabilities</th>
-      <th>Total Equity</th>
-      <th>Total Liabilities</th>
-      <th>Total Liabilities &amp; Equity</th>
-      <th>Total Revenue</th>
-      <th>Treasury Stock</th>
-      <th>For Year</th>
-      <th>Earnings Per Share</th>
-      <th>Estimated Shares Outstanding</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>-0.465085</td>
-      <td>0.030099</td>
-      <td>-0.032156</td>
-      <td>-0.194527</td>
-      <td>0.584432</td>
-      <td>-0.097529</td>
-      <td>0.850780</td>
-      <td>-0.193712</td>
-      <td>-0.017345</td>
-      <td>-0.311008</td>
-      <td>...</td>
-      <td>-0.230114</td>
-      <td>-0.311262</td>
-      <td>-0.237029</td>
-      <td>-0.547999</td>
-      <td>-0.529710</td>
-      <td>-0.469774</td>
-      <td>0.010501</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>-0.333761</td>
-      <td>0.340865</td>
-      <td>-0.158134</td>
-      <td>-0.203520</td>
-      <td>0.643688</td>
-      <td>-0.270876</td>
-      <td>-0.553838</td>
-      <td>-0.192524</td>
-      <td>-0.007467</td>
-      <td>-0.310733</td>
-      <td>...</td>
-      <td>-0.584667</td>
-      <td>-0.508330</td>
-      <td>-0.507809</td>
-      <td>-0.076495</td>
-      <td>-0.190354</td>
-      <td>-0.423830</td>
-      <td>0.084687</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>-0.151388</td>
-      <td>-0.115648</td>
-      <td>-0.075259</td>
-      <td>-0.212513</td>
-      <td>0.577438</td>
-      <td>-0.260089</td>
-      <td>-0.553838</td>
-      <td>-0.140442</td>
-      <td>-0.017345</td>
-      <td>-0.277090</td>
-      <td>...</td>
-      <td>-0.584667</td>
-      <td>-0.508330</td>
-      <td>-0.548629</td>
-      <td>-0.487446</td>
-      <td>-0.554011</td>
-      <td>-0.476885</td>
-      <td>0.585735</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>-0.517467</td>
-      <td>0.287618</td>
-      <td>-0.313475</td>
-      <td>0.641809</td>
-      <td>0.665044</td>
-      <td>-0.653063</td>
-      <td>0.052890</td>
-      <td>-0.233907</td>
-      <td>-0.050998</td>
-      <td>-0.310829</td>
-      <td>...</td>
-      <td>-0.534317</td>
-      <td>-0.478219</td>
-      <td>-0.832153</td>
-      <td>-0.621018</td>
-      <td>-0.738483</td>
-      <td>-0.568831</td>
-      <td>0.585735</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-    </tr>
-    <tr>
-      <th>4</th>
-      <td>-0.496865</td>
-      <td>0.100453</td>
-      <td>-0.053668</td>
-      <td>-0.243988</td>
-      <td>0.519866</td>
-      <td>0.304491</td>
-      <td>0.751044</td>
-      <td>-0.196318</td>
-      <td>-0.198555</td>
-      <td>-0.311019</td>
-      <td>...</td>
-      <td>-0.428148</td>
-      <td>-0.450646</td>
-      <td>-0.133725</td>
-      <td>-0.564775</td>
-      <td>-0.518814</td>
-      <td>-0.545658</td>
-      <td>0.457855</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-    </tr>
-  </tbody>
-</table>
-<p>5 rows × 76 columns</p>
-</div>
-    <div class="colab-df-buttons">
-
-  <div class="colab-df-container">
-    <button class="colab-df-convert" onclick="convertToInteractive('df-b3a2ed4f-c4a5-424d-a98e-c889eb633370')"
-            title="Convert this dataframe to an interactive table."
-            style="display:none;">
-
-  <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960">
-    <path d="M120-120v-720h720v720H120Zm60-500h600v-160H180v160Zm220 220h160v-160H400v160Zm0 220h160v-160H400v160ZM180-400h160v-160H180v160Zm440 0h160v-160H620v160ZM180-180h160v-160H180v160Zm440 0h160v-160H620v160Z"/>
-  </svg>
-    </button>
-
-  <style>
-    .colab-df-container {
-      display:flex;
-      gap: 12px;
-    }
-
-    .colab-df-convert {
-      background-color: #E8F0FE;
-      border: none;
-      border-radius: 50%;
-      cursor: pointer;
-      display: none;
-      fill: #1967D2;
-      height: 32px;
-      padding: 0 0 0 0;
-      width: 32px;
-    }
-
-    .colab-df-convert:hover {
-      background-color: #E2EBFA;
-      box-shadow: 0px 1px 2px rgba(60, 64, 67, 0.3), 0px 1px 3px 1px rgba(60, 64, 67, 0.15);
-      fill: #174EA6;
-    }
-
-    .colab-df-buttons div {
-      margin-bottom: 4px;
-    }
-
-    [theme=dark] .colab-df-convert {
-      background-color: #3B4455;
-      fill: #D2E3FC;
-    }
-
-    [theme=dark] .colab-df-convert:hover {
-      background-color: #434B5C;
-      box-shadow: 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
-      filter: drop-shadow(0px 1px 2px rgba(0, 0, 0, 0.3));
-      fill: #FFFFFF;
-    }
-  </style>
-
-    <script>
-      const buttonEl =
-        document.querySelector('#df-b3a2ed4f-c4a5-424d-a98e-c889eb633370 button.colab-df-convert');
-      buttonEl.style.display =
-        google.colab.kernel.accessAllowed ? 'block' : 'none';
-
-      async function convertToInteractive(key) {
-        const element = document.querySelector('#df-b3a2ed4f-c4a5-424d-a98e-c889eb633370');
-        const dataTable =
-          await google.colab.kernel.invokeFunction('convertToInteractive',
-                                                    [key], {});
-        if (!dataTable) return;
-
-        const docLinkHtml = 'Like what you see? Visit the ' +
-          '<a target="_blank" href=https://colab.research.google.com/notebooks/data_table.ipynb>data table notebook</a>'
-          + ' to learn more about interactive tables.';
-        element.innerHTML = '';
-        dataTable['output_type'] = 'display_data';
-        await google.colab.output.renderOutput(dataTable, element);
-        const docLink = document.createElement('div');
-        docLink.innerHTML = docLinkHtml;
-        element.appendChild(docLink);
-      }
-    </script>
-  </div>
-
-
-<div id="df-5d7383e3-13fb-401c-91f4-af61a7ffc942">
-  <button class="colab-df-quickchart" onclick="quickchart('df-5d7383e3-13fb-401c-91f4-af61a7ffc942')"
-            title="Suggest charts"
-            style="display:none;">
-
-<svg xmlns="http://www.w3.org/2000/svg" height="24px"viewBox="0 0 24 24"
-     width="24px">
-    <g>
-        <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/>
-    </g>
-</svg>
-  </button>
-
-<style>
-  .colab-df-quickchart {
-      --bg-color: #E8F0FE;
-      --fill-color: #1967D2;
-      --hover-bg-color: #E2EBFA;
-      --hover-fill-color: #174EA6;
-      --disabled-fill-color: #AAA;
-      --disabled-bg-color: #DDD;
-  }
-
-  [theme=dark] .colab-df-quickchart {
-      --bg-color: #3B4455;
-      --fill-color: #D2E3FC;
-      --hover-bg-color: #434B5C;
-      --hover-fill-color: #FFFFFF;
-      --disabled-bg-color: #3B4455;
-      --disabled-fill-color: #666;
-  }
-
-  .colab-df-quickchart {
-    background-color: var(--bg-color);
-    border: none;
-    border-radius: 50%;
-    cursor: pointer;
-    display: none;
-    fill: var(--fill-color);
-    height: 32px;
-    padding: 0;
-    width: 32px;
-  }
-
-  .colab-df-quickchart:hover {
-    background-color: var(--hover-bg-color);
-    box-shadow: 0 1px 2px rgba(60, 64, 67, 0.3), 0 1px 3px 1px rgba(60, 64, 67, 0.15);
-    fill: var(--button-hover-fill-color);
-  }
-
-  .colab-df-quickchart-complete:disabled,
-  .colab-df-quickchart-complete:disabled:hover {
-    background-color: var(--disabled-bg-color);
-    fill: var(--disabled-fill-color);
-    box-shadow: none;
-  }
-
-  .colab-df-spinner {
-    border: 2px solid var(--fill-color);
-    border-color: transparent;
-    border-bottom-color: var(--fill-color);
-    animation:
-      spin 1s steps(1) infinite;
-  }
-
-  @keyframes spin {
-    0% {
-      border-color: transparent;
-      border-bottom-color: var(--fill-color);
-      border-left-color: var(--fill-color);
-    }
-    20% {
-      border-color: transparent;
-      border-left-color: var(--fill-color);
-      border-top-color: var(--fill-color);
-    }
-    30% {
-      border-color: transparent;
-      border-left-color: var(--fill-color);
-      border-top-color: var(--fill-color);
-      border-right-color: var(--fill-color);
-    }
-    40% {
-      border-color: transparent;
-      border-right-color: var(--fill-color);
-      border-top-color: var(--fill-color);
-    }
-    60% {
-      border-color: transparent;
-      border-right-color: var(--fill-color);
-    }
-    80% {
-      border-color: transparent;
-      border-right-color: var(--fill-color);
-      border-bottom-color: var(--fill-color);
-    }
-    90% {
-      border-color: transparent;
-      border-bottom-color: var(--fill-color);
-    }
-  }
-</style>
-
-  <script>
-    async function quickchart(key) {
-      const quickchartButtonEl =
-        document.querySelector('#' + key + ' button');
-      quickchartButtonEl.disabled = true;  // To prevent multiple clicks.
-      quickchartButtonEl.classList.add('colab-df-spinner');
-      try {
-        const charts = await google.colab.kernel.invokeFunction(
-            'suggestCharts', [key], {});
-      } catch (error) {
-        console.error('Error during call to suggestCharts:', error);
-      }
-      quickchartButtonEl.classList.remove('colab-df-spinner');
-      quickchartButtonEl.classList.add('colab-df-quickchart-complete');
-    }
-    (() => {
-      let quickchartButtonEl =
-        document.querySelector('#df-5d7383e3-13fb-401c-91f4-af61a7ffc942 button');
-      quickchartButtonEl.style.display =
-        google.colab.kernel.accessAllowed ? 'block' : 'none';
-    })();
-  </script>
-</div>
-    </div>
-  </div>
-
-
-
-
-As all of the variables in the data normalized, I need to choose number of components (variables) that I will include in the data. In order to do it, I will compare number of components vs Cumulative Explained Variance and I will choose optimal number that has the most of data variance saved.
-
-
-```python
+::: {.cell .code execution_count="20" colab="{\"base_uri\":\"https://localhost:8080/\",\"height\":1000}" id="d1pQLMhmoZVa" outputId="7f59db1f-0f8c-4945-9610-dc7315271766"}
+``` python
 # model with a specific number of components for PCA
 ## n_components = number of components
 model_pca = PCA(n_components=25)
@@ -2634,394 +730,43 @@ pd.DataFrame({
 })
 ```
 
+::: {.output .display_data}
+![](vertopal_1e43fb906b67491c962e6dd45f6cc5d9/842b26b2172dbbdf2cb137e34eacf611ea9a95aa.png)
+:::
 
-    
-![png](output_28_0.png)
-    
+::: {.output .execute_result execution_count="20"}
+``` json
+{"summary":"{\n  \"name\": \"})\",\n  \"rows\": 25,\n  \"fields\": [\n    {\n      \"column\": \"Number of Components\",\n      \"properties\": {\n        \"dtype\": \"number\",\n        \"std\": 7,\n        \"min\": 1,\n        \"max\": 25,\n        \"num_unique_values\": 25,\n        \"samples\": [\n          9,\n          17,\n          1\n        ],\n        \"semantic_type\": \"\",\n        \"description\": \"\"\n      }\n    },\n    {\n      \"column\": \"Cumulative Variance for Component\",\n      \"properties\": {\n        \"dtype\": \"number\",\n        \"std\": 0.19955604621497347,\n        \"min\": 0.2864954467842965,\n        \"max\": 0.9684391723349536,\n        \"num_unique_values\": 25,\n        \"samples\": [\n          0.7368306506149693,\n          0.911105667249178,\n          0.2864954467842965\n        ],\n        \"semantic_type\": \"\",\n        \"description\": \"\"\n      }\n    }\n  ]\n}","type":"dataframe"}
+```
+:::
+:::
 
+::: {.cell .markdown id="yFqXJeH9x24D"}
+At most, I can save \~97% of data variance using 25 components. However,
+if I take 20 components, I will save \~94% of data variance and I will
+reduce the dimensionality of the data even more. While it is lower than
+97%, the difference is only 3%, so I am going to choose `20` components
+for the sake of dimensionality reduction.
+:::
 
-
-
-
-
-  <div id="df-2af84133-0343-4b73-9d0a-b38cbc50a4f1" class="colab-df-container">
-    <div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>Number of Components</th>
-      <th>Cumulative Variance for Component</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>1</td>
-      <td>0.286495</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>2</td>
-      <td>0.379206</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>3</td>
-      <td>0.452330</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>4</td>
-      <td>0.512570</td>
-    </tr>
-    <tr>
-      <th>4</th>
-      <td>5</td>
-      <td>0.570557</td>
-    </tr>
-    <tr>
-      <th>5</th>
-      <td>6</td>
-      <td>0.620420</td>
-    </tr>
-    <tr>
-      <th>6</th>
-      <td>7</td>
-      <td>0.662947</td>
-    </tr>
-    <tr>
-      <th>7</th>
-      <td>8</td>
-      <td>0.702642</td>
-    </tr>
-    <tr>
-      <th>8</th>
-      <td>9</td>
-      <td>0.736831</td>
-    </tr>
-    <tr>
-      <th>9</th>
-      <td>10</td>
-      <td>0.767886</td>
-    </tr>
-    <tr>
-      <th>10</th>
-      <td>11</td>
-      <td>0.797350</td>
-    </tr>
-    <tr>
-      <th>11</th>
-      <td>12</td>
-      <td>0.823335</td>
-    </tr>
-    <tr>
-      <th>12</th>
-      <td>13</td>
-      <td>0.848568</td>
-    </tr>
-    <tr>
-      <th>13</th>
-      <td>14</td>
-      <td>0.866299</td>
-    </tr>
-    <tr>
-      <th>14</th>
-      <td>15</td>
-      <td>0.882846</td>
-    </tr>
-    <tr>
-      <th>15</th>
-      <td>16</td>
-      <td>0.898277</td>
-    </tr>
-    <tr>
-      <th>16</th>
-      <td>17</td>
-      <td>0.911106</td>
-    </tr>
-    <tr>
-      <th>17</th>
-      <td>18</td>
-      <td>0.922090</td>
-    </tr>
-    <tr>
-      <th>18</th>
-      <td>19</td>
-      <td>0.931740</td>
-    </tr>
-    <tr>
-      <th>19</th>
-      <td>20</td>
-      <td>0.939247</td>
-    </tr>
-    <tr>
-      <th>20</th>
-      <td>21</td>
-      <td>0.946330</td>
-    </tr>
-    <tr>
-      <th>21</th>
-      <td>22</td>
-      <td>0.952661</td>
-    </tr>
-    <tr>
-      <th>22</th>
-      <td>23</td>
-      <td>0.958446</td>
-    </tr>
-    <tr>
-      <th>23</th>
-      <td>24</td>
-      <td>0.963638</td>
-    </tr>
-    <tr>
-      <th>24</th>
-      <td>25</td>
-      <td>0.968439</td>
-    </tr>
-  </tbody>
-</table>
-</div>
-    <div class="colab-df-buttons">
-
-  <div class="colab-df-container">
-    <button class="colab-df-convert" onclick="convertToInteractive('df-2af84133-0343-4b73-9d0a-b38cbc50a4f1')"
-            title="Convert this dataframe to an interactive table."
-            style="display:none;">
-
-  <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960">
-    <path d="M120-120v-720h720v720H120Zm60-500h600v-160H180v160Zm220 220h160v-160H400v160Zm0 220h160v-160H400v160ZM180-400h160v-160H180v160Zm440 0h160v-160H620v160ZM180-180h160v-160H180v160Zm440 0h160v-160H620v160Z"/>
-  </svg>
-    </button>
-
-  <style>
-    .colab-df-container {
-      display:flex;
-      gap: 12px;
-    }
-
-    .colab-df-convert {
-      background-color: #E8F0FE;
-      border: none;
-      border-radius: 50%;
-      cursor: pointer;
-      display: none;
-      fill: #1967D2;
-      height: 32px;
-      padding: 0 0 0 0;
-      width: 32px;
-    }
-
-    .colab-df-convert:hover {
-      background-color: #E2EBFA;
-      box-shadow: 0px 1px 2px rgba(60, 64, 67, 0.3), 0px 1px 3px 1px rgba(60, 64, 67, 0.15);
-      fill: #174EA6;
-    }
-
-    .colab-df-buttons div {
-      margin-bottom: 4px;
-    }
-
-    [theme=dark] .colab-df-convert {
-      background-color: #3B4455;
-      fill: #D2E3FC;
-    }
-
-    [theme=dark] .colab-df-convert:hover {
-      background-color: #434B5C;
-      box-shadow: 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
-      filter: drop-shadow(0px 1px 2px rgba(0, 0, 0, 0.3));
-      fill: #FFFFFF;
-    }
-  </style>
-
-    <script>
-      const buttonEl =
-        document.querySelector('#df-2af84133-0343-4b73-9d0a-b38cbc50a4f1 button.colab-df-convert');
-      buttonEl.style.display =
-        google.colab.kernel.accessAllowed ? 'block' : 'none';
-
-      async function convertToInteractive(key) {
-        const element = document.querySelector('#df-2af84133-0343-4b73-9d0a-b38cbc50a4f1');
-        const dataTable =
-          await google.colab.kernel.invokeFunction('convertToInteractive',
-                                                    [key], {});
-        if (!dataTable) return;
-
-        const docLinkHtml = 'Like what you see? Visit the ' +
-          '<a target="_blank" href=https://colab.research.google.com/notebooks/data_table.ipynb>data table notebook</a>'
-          + ' to learn more about interactive tables.';
-        element.innerHTML = '';
-        dataTable['output_type'] = 'display_data';
-        await google.colab.output.renderOutput(dataTable, element);
-        const docLink = document.createElement('div');
-        docLink.innerHTML = docLinkHtml;
-        element.appendChild(docLink);
-      }
-    </script>
-  </div>
-
-
-<div id="df-f85d7491-54c6-42d4-945e-80c5ef13cd53">
-  <button class="colab-df-quickchart" onclick="quickchart('df-f85d7491-54c6-42d4-945e-80c5ef13cd53')"
-            title="Suggest charts"
-            style="display:none;">
-
-<svg xmlns="http://www.w3.org/2000/svg" height="24px"viewBox="0 0 24 24"
-     width="24px">
-    <g>
-        <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/>
-    </g>
-</svg>
-  </button>
-
-<style>
-  .colab-df-quickchart {
-      --bg-color: #E8F0FE;
-      --fill-color: #1967D2;
-      --hover-bg-color: #E2EBFA;
-      --hover-fill-color: #174EA6;
-      --disabled-fill-color: #AAA;
-      --disabled-bg-color: #DDD;
-  }
-
-  [theme=dark] .colab-df-quickchart {
-      --bg-color: #3B4455;
-      --fill-color: #D2E3FC;
-      --hover-bg-color: #434B5C;
-      --hover-fill-color: #FFFFFF;
-      --disabled-bg-color: #3B4455;
-      --disabled-fill-color: #666;
-  }
-
-  .colab-df-quickchart {
-    background-color: var(--bg-color);
-    border: none;
-    border-radius: 50%;
-    cursor: pointer;
-    display: none;
-    fill: var(--fill-color);
-    height: 32px;
-    padding: 0;
-    width: 32px;
-  }
-
-  .colab-df-quickchart:hover {
-    background-color: var(--hover-bg-color);
-    box-shadow: 0 1px 2px rgba(60, 64, 67, 0.3), 0 1px 3px 1px rgba(60, 64, 67, 0.15);
-    fill: var(--button-hover-fill-color);
-  }
-
-  .colab-df-quickchart-complete:disabled,
-  .colab-df-quickchart-complete:disabled:hover {
-    background-color: var(--disabled-bg-color);
-    fill: var(--disabled-fill-color);
-    box-shadow: none;
-  }
-
-  .colab-df-spinner {
-    border: 2px solid var(--fill-color);
-    border-color: transparent;
-    border-bottom-color: var(--fill-color);
-    animation:
-      spin 1s steps(1) infinite;
-  }
-
-  @keyframes spin {
-    0% {
-      border-color: transparent;
-      border-bottom-color: var(--fill-color);
-      border-left-color: var(--fill-color);
-    }
-    20% {
-      border-color: transparent;
-      border-left-color: var(--fill-color);
-      border-top-color: var(--fill-color);
-    }
-    30% {
-      border-color: transparent;
-      border-left-color: var(--fill-color);
-      border-top-color: var(--fill-color);
-      border-right-color: var(--fill-color);
-    }
-    40% {
-      border-color: transparent;
-      border-right-color: var(--fill-color);
-      border-top-color: var(--fill-color);
-    }
-    60% {
-      border-color: transparent;
-      border-right-color: var(--fill-color);
-    }
-    80% {
-      border-color: transparent;
-      border-right-color: var(--fill-color);
-      border-bottom-color: var(--fill-color);
-    }
-    90% {
-      border-color: transparent;
-      border-bottom-color: var(--fill-color);
-    }
-  }
-</style>
-
-  <script>
-    async function quickchart(key) {
-      const quickchartButtonEl =
-        document.querySelector('#' + key + ' button');
-      quickchartButtonEl.disabled = true;  // To prevent multiple clicks.
-      quickchartButtonEl.classList.add('colab-df-spinner');
-      try {
-        const charts = await google.colab.kernel.invokeFunction(
-            'suggestCharts', [key], {});
-      } catch (error) {
-        console.error('Error during call to suggestCharts:', error);
-      }
-      quickchartButtonEl.classList.remove('colab-df-spinner');
-      quickchartButtonEl.classList.add('colab-df-quickchart-complete');
-    }
-    (() => {
-      let quickchartButtonEl =
-        document.querySelector('#df-f85d7491-54c6-42d4-945e-80c5ef13cd53 button');
-      quickchartButtonEl.style.display =
-        google.colab.kernel.accessAllowed ? 'block' : 'none';
-    })();
-  </script>
-</div>
-    </div>
-  </div>
-
-
-
-
-At most, I can save ~97% of data variance using 25 components. However, if I take 20 components, I will save ~94% of data variance and I will reduce the dimensionality of the data even more. While it is lower than 97%, the difference is only 3%, so I am going to choose `20` components for the sake of dimensionality reduction.
-
+::: {.cell .markdown id="7OcNhN3l0RVJ"}
 ## Determining Number of K clusters for K-means clustering
-As I identified optimal number of components, I am going to use this reduced data to find an optiminal number of clusters and then produce a K-means clustering.
 
+As I identified optimal number of components, I am going to use this
+reduced data to find an optiminal number of clusters and then produce a
+K-means clustering.
+:::
 
-```python
+::: {.cell .code execution_count="35" id="ZjFt5MbJynAY"}
+``` python
 # fit main data to pca with 20 components
 pca = PCA(n_components = 20)
 data = pca.fit_transform(fundamentals_norm)
 ```
+:::
 
-
-```python
+::: {.cell .code execution_count="36" colab="{\"base_uri\":\"https://localhost:8080/\"}" id="qtoJVDIb0qoH" outputId="32db15b8-f198-4f6f-ca46-a48ceab26842"}
+``` python
 ## sse - SUM OF SQUARED ERRORS
 ## record sss for each number of clusters
 sse = []
@@ -3032,6 +777,7 @@ for k in range(1, 25):
   sse.append(kmeans.inertia_)
 ```
 
+::: {.output .stream .stdout}
     1
     2
     3
@@ -3042,8 +788,9 @@ for k in range(1, 25):
     8
     9
     10
-    
+:::
 
+::: {.output .stream .stderr}
     /usr/local/lib/python3.10/dist-packages/sklearn/cluster/_kmeans.py:870: FutureWarning: The default value of `n_init` will change from 10 to 'auto' in 1.4. Set the value of `n_init` explicitly to suppress the warning
       warnings.warn(
     /usr/local/lib/python3.10/dist-packages/sklearn/cluster/_kmeans.py:870: FutureWarning: The default value of `n_init` will change from 10 to 'auto' in 1.4. Set the value of `n_init` explicitly to suppress the warning
@@ -3064,8 +811,9 @@ for k in range(1, 25):
       warnings.warn(
     /usr/local/lib/python3.10/dist-packages/sklearn/cluster/_kmeans.py:870: FutureWarning: The default value of `n_init` will change from 10 to 'auto' in 1.4. Set the value of `n_init` explicitly to suppress the warning
       warnings.warn(
-    
+:::
 
+::: {.output .stream .stdout}
     11
     12
     13
@@ -3073,8 +821,9 @@ for k in range(1, 25):
     15
     16
     17
-    
+:::
 
+::: {.output .stream .stderr}
     /usr/local/lib/python3.10/dist-packages/sklearn/cluster/_kmeans.py:870: FutureWarning: The default value of `n_init` will change from 10 to 'auto' in 1.4. Set the value of `n_init` explicitly to suppress the warning
       warnings.warn(
     /usr/local/lib/python3.10/dist-packages/sklearn/cluster/_kmeans.py:870: FutureWarning: The default value of `n_init` will change from 10 to 'auto' in 1.4. Set the value of `n_init` explicitly to suppress the warning
@@ -3089,15 +838,17 @@ for k in range(1, 25):
       warnings.warn(
     /usr/local/lib/python3.10/dist-packages/sklearn/cluster/_kmeans.py:870: FutureWarning: The default value of `n_init` will change from 10 to 'auto' in 1.4. Set the value of `n_init` explicitly to suppress the warning
       warnings.warn(
-    
+:::
 
+::: {.output .stream .stdout}
     18
     19
     20
     21
     22
-    
+:::
 
+::: {.output .stream .stderr}
     /usr/local/lib/python3.10/dist-packages/sklearn/cluster/_kmeans.py:870: FutureWarning: The default value of `n_init` will change from 10 to 'auto' in 1.4. Set the value of `n_init` explicitly to suppress the warning
       warnings.warn(
     /usr/local/lib/python3.10/dist-packages/sklearn/cluster/_kmeans.py:870: FutureWarning: The default value of `n_init` will change from 10 to 'auto' in 1.4. Set the value of `n_init` explicitly to suppress the warning
@@ -3108,27 +859,28 @@ for k in range(1, 25):
       warnings.warn(
     /usr/local/lib/python3.10/dist-packages/sklearn/cluster/_kmeans.py:870: FutureWarning: The default value of `n_init` will change from 10 to 'auto' in 1.4. Set the value of `n_init` explicitly to suppress the warning
       warnings.warn(
-    
+:::
 
+::: {.output .stream .stdout}
     23
     24
-    
+:::
 
+::: {.output .stream .stderr}
     /usr/local/lib/python3.10/dist-packages/sklearn/cluster/_kmeans.py:870: FutureWarning: The default value of `n_init` will change from 10 to 'auto' in 1.4. Set the value of `n_init` explicitly to suppress the warning
       warnings.warn(
     /usr/local/lib/python3.10/dist-packages/sklearn/cluster/_kmeans.py:870: FutureWarning: The default value of `n_init` will change from 10 to 'auto' in 1.4. Set the value of `n_init` explicitly to suppress the warning
       warnings.warn(
-    
+:::
+:::
 
-
-```python
+::: {.cell .code execution_count="37" colab="{\"base_uri\":\"https://localhost:8080/\"}" id="vY9C2L5_1azi" outputId="a91748e5-8e31-41a5-fec0-76f1b1114c65"}
+``` python
 ## check
 sse
 ```
 
-
-
-
+::: {.output .execute_result execution_count="37"}
     [6787.94099290186,
      5279.219600522962,
      4586.072804190557,
@@ -3153,11 +905,11 @@ sse
      819.4087444022276,
      777.214711159224,
      688.6582637762617]
+:::
+:::
 
-
-
-
-```python
+::: {.cell .code execution_count="38" colab="{\"base_uri\":\"https://localhost:8080/\",\"height\":889}" id="l7bTCs5I1ejm" outputId="4e8fe99d-f0cb-4935-ade9-a7031429f95b"}
+``` python
 # plot SSE vs number of clusters
 plt.figure(figsize = (12, 10))
 plt.plot(range(1, 25), sse, marker='o')
@@ -3177,18 +929,24 @@ plt.yticks(fontsize = 16)
 plt.show()
 ```
 
+::: {.output .display_data}
+![](vertopal_1e43fb906b67491c962e6dd45f6cc5d9/d1ce40be6d3b21cb3ab2b2a1ee287c15ffc09c5d.png)
+:::
+:::
 
-    
-![png](output_34_0.png)
-    
+::: {.cell .markdown id="fK7yStmD2tMp"}
+Above visualization shows that SSE highly decreases till \~3 clusters,
+then it marginally decreases, as clusters increase. Marginall decrease
+is not something I am looking for as I am intending to cluster
+datapoints into distinct groups. That\'s why I will choose 3 clusters.
+:::
 
-
-Above visualization shows that SSE highly decreases till ~3 clusters, then it marginally decreases, as clusters increase. Marginall decrease is not something I am looking for as I am intending to cluster datapoints into distinct groups. That's why I will choose 3 clusters.
-
+::: {.cell .markdown id="YfZGJfJP83eh"}
 ## Clustering
+:::
 
-
-```python
+::: {.cell .code execution_count="39" colab="{\"base_uri\":\"https://localhost:8080/\"}" id="dhKFF6ns2r7t" outputId="b1eb0c34-2ce3-4865-9750-23e379e168ef"}
+``` python
 # clustering model
 model_clusters = KMeans(n_clusters = 3, random_state = 1042)
 
@@ -3200,47 +958,54 @@ cluster_labels = model_clusters.fit_predict(data)
 print(cluster_labels[0:10])
 ```
 
+::: {.output .stream .stdout}
     [1 1 1 1 1 0 0 1 1 0]
-    
+:::
 
+::: {.output .stream .stderr}
     /usr/local/lib/python3.10/dist-packages/sklearn/cluster/_kmeans.py:870: FutureWarning: The default value of `n_init` will change from 10 to 'auto' in 1.4. Set the value of `n_init` explicitly to suppress the warning
       warnings.warn(
-    
+:::
+:::
 
-
-```python
+::: {.cell .code execution_count="63" colab="{\"base_uri\":\"https://localhost:8080/\",\"height\":716}" id="RQTQTA5m2xrO" outputId="0ace7e3e-e104-4782-97da-eae37c32ce67"}
+``` python
 # initial plot without centroids
 ig, ax = plt.subplots(1, 1, figsize=(10,8))
 ax.scatter(data[:,0], data[:,1], c=cluster_labels)
 ax.set_title("K-Means Clustering Results with K=3")
 ```
 
-
-
-
+::: {.output .execute_result execution_count="63"}
     Text(0.5, 1.0, 'K-Means Clustering Results with K=3')
+:::
 
+::: {.output .display_data}
+![](vertopal_1e43fb906b67491c962e6dd45f6cc5d9/ed2bfa71b4b764250e8adf2aa5016693189fbc44.png)
+:::
+:::
 
+::: {.cell .markdown id="usFOCG5Ki9ao"}
+With 20 components and 3 clusters, it is clear that some yellow and
+purple groups are overlapping. I want to try and to cluster groups in a
+better and more distinct clusters.
 
+I assume that such overlapping might be related to noise and to a number
+of components, as I only saved 93% of explained data variance. I will
+use 25 components with 3 clusters with 97% of explained data variance to
+see if it is going to improve the clustering process.
+:::
 
-    
-![png](output_38_1.png)
-    
-
-
-With 20 components and 3 clusters, it is clear that some yellow and purple groups are overlapping. I want to try and to cluster groups in a better and more distinct clusters.
-
-I assume that such overlapping might be related to noise and to a number of components, as I only saved 93% of explained data variance. I will use 25 components with 3 clusters with 97% of explained data variance to see if it is going to improve the clustering process.
-
-
-```python
+::: {.cell .code execution_count="41" id="bnHnnyD3jjSP"}
+``` python
 # fit main data to pca with 20 components
 pca = PCA(n_components = 25)
 data = pca.fit_transform(fundamentals_norm)
 ```
+:::
 
-
-```python
+::: {.cell .code execution_count="43" colab="{\"base_uri\":\"https://localhost:8080/\"}" id="-Lmi53PdkYRp" outputId="9adbae27-22a4-4780-9c42-a1b9eedfe04a"}
+``` python
 # clustering model
 model_clusters = KMeans(n_clusters = 3, random_state = 1042)
 
@@ -3252,52 +1017,60 @@ cluster_labels = model_clusters.fit_predict(data)
 print(cluster_labels[0:10])
 ```
 
+::: {.output .stream .stdout}
     [2 2 2 2 2 0 0 2 2 0]
-    
+:::
 
+::: {.output .stream .stderr}
     /usr/local/lib/python3.10/dist-packages/sklearn/cluster/_kmeans.py:870: FutureWarning: The default value of `n_init` will change from 10 to 'auto' in 1.4. Set the value of `n_init` explicitly to suppress the warning
       warnings.warn(
-    
+:::
+:::
 
-
-```python
+::: {.cell .code execution_count="64" colab="{\"base_uri\":\"https://localhost:8080/\",\"height\":716}" id="OeddLC6blJWz" outputId="ab6782c1-e783-4b5f-cc2c-fc78246be5b4"}
+``` python
 # initial plot without centroids
 ig, ax = plt.subplots(1, 1, figsize=(10,8))
 ax.scatter(data[:,0], data[:,1], c=cluster_labels)
 ax.set_title("K-Means Clustering Results with K=3")
 ```
 
-
-
-
+::: {.output .execute_result execution_count="64"}
     Text(0.5, 1.0, 'K-Means Clustering Results with K=3')
+:::
 
+::: {.output .display_data}
+![](vertopal_1e43fb906b67491c962e6dd45f6cc5d9/ed2bfa71b4b764250e8adf2aa5016693189fbc44.png)
+:::
+:::
 
+::: {.cell .markdown id="5G7fmYBimd6i"}
+K-Means Clustering with 25 components and 3 clusters is a little bit
+better than K-Means Clustering with 20 components. There is 1
+observation which changes its cluster color in second graph, which leads
+to more clear and not overlapping groups. While it is an insignificant
+improvement, I am going to leave 25 components for this data clustering.
 
+The last part is to produce a finalized graph with centroids in the
+center of each group.
+:::
 
-    
-![png](output_42_1.png)
-    
-
-
-K-Means Clustering with 25 components and 3 clusters is a little bit better than K-Means Clustering with 20 components. There is 1 observation which changes its cluster color in second graph, which leads to more clear and not overlapping groups. While it is an insignificant improvement, I am going to leave 25 components for this data clustering.
-
-The last part is to produce a finalized graph with centroids in the center of each group.
-
+::: {.cell .markdown id="Vznuf1Y69PPI"}
 ### Generate Clusters for each cluster group
+:::
 
-
-```python
+::: {.cell .code execution_count="46" id="4-W--TR7CxHs"}
+``` python
 # data with our clusters
 data
 
 # define clusters in the data
 centroids = model_clusters.cluster_centers_
-
 ```
+:::
 
-
-```python
+::: {.cell .code execution_count="65" colab="{\"base_uri\":\"https://localhost:8080/\",\"height\":858}" id="CgngXPkD8O2n" outputId="cef017a0-239d-4999-b61f-45d8a78ae298"}
+``` python
 # data with each cluster as unique value
 each_cluster = np.unique(cluster_labels)
 
@@ -3326,16 +1099,14 @@ plt.grid(True)
 
 # show the plot
 plt.show()
-
 ```
 
+::: {.output .display_data}
+![](vertopal_1e43fb906b67491c962e6dd45f6cc5d9/564cc2a363d11dffde8b46ff66713fe232d472d4.png)
+:::
+:::
 
-    
-![png](output_46_0.png)
-    
-
-
-
-```python
-
+::: {.cell .code id="BJ9VTmP-EMkw"}
+``` python
 ```
+:::
